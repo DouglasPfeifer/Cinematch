@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.login.LoginActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background_login"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="CINEMATCH"
+        android:textSize="32dp"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="74dp"
+        android:layout_below="@+id/info"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:tint="@android:color/white"
+        android:src="@drawable/logo"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/info"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="18sp"
+        />
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/button_facebookLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="10sp"
+        android:paddingBottom="10sp"
+        android:paddingLeft="50sp"
+        android:paddingRight="50sp"
+        android:layout_marginBottom="50dp"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

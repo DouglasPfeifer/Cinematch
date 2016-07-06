@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.douglaspfeifer.cinematch.ui.profile.EditableProfileActivity"
+    tools:showIn="@layout/activity_editable_profile" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true" >
+
+        <LinearLayout
+            android:id="@+id/editableProfile_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:orientation="vertical" >
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/description_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Descrição"
+                    android:inputType="text|textMultiLine|textCapSentences"
+                    android:maxLines="5"
+                    android:maxLength="300" />
+                <TextView
+                    android:id="@+id/charactersRemaining_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right" />
+
+            </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

@@ -18,40 +18,35 @@
             android:orientation="vertical">
 
             <RelativeLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:orientation="vertical">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/myProfileImage_imageView"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/profile_image"
-                        app:border_color="#FF000000"/>
-                    <TextView
-                        android:id="@+id/myProfileName_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Aqui deveria estar o nome no banco de dados" />
-                </LinearLayout>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/myProfileImage_imageView"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/profile_image"
+                    app:border_color="#FF000000"/>
 
                 <Button
                     android:id="@+id/editProfile_Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:text="Editar"/>
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignRight="@+id/myProfileImage_imageView"
+                    />
             </RelativeLayout>
+
+            <TextView
+                android:id="@+id/myProfileName_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Aqui deveria estar o nome no banco de dados" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -59,12 +54,12 @@
                 android:layout_margin="8dp"
                 android:layout_gravity="center">
 
-                <ImageView
-                    android:id="@+id/myProfileStars_imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_margin="1dp"
-                    android:src="@drawable/five_star_icons" />
+                <RatingBar
+                    android:id="@+id/myProfileRate_ratingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:isIndicator="true"
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -75,12 +70,6 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/myProfileAge_textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Aqui deveria estar a idade no banco de dados"/>
-                <TextView
                     android:id="@+id/myProfileDescription_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -88,10 +77,12 @@
                     android:text="Aqui deveria estar a descrição no banco de dados" />
             </LinearLayout>
 
-            <LinearLayout
+            <GridLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:rowCount="4"
+                android:columnCount="4">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -111,7 +102,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Aqui deveria estar o gênero favorito no banco de dados" />
+                        android:text="Fav Genre" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -133,10 +124,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Aqui deveria estar o gênero no banco de dados" />
+                        android:text="Genre" />
                 </LinearLayout>
 
-            </LinearLayout>
+            </GridLayout>
 
         </LinearLayout>
 

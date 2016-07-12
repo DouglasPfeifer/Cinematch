@@ -1,8 +1,5 @@
 package com.example.douglaspfeifer.cinematch.utils;
 
-/**
- * Created by douglaspfeifer on 27/06/16.
- */
 public class Utils {
 
     /**
@@ -11,5 +8,9 @@ public class Utils {
      */
     public static String encodeEmail(String userEmail) {
         return userEmail.replace(".", ",");
+    }
+
+    public static void updateSharedPreferences () {
+
     }
 }

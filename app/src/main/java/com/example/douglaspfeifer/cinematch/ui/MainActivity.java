@@ -1,5 +1,7 @@
 package com.example.douglaspfeifer.cinematch.ui;
 
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -25,10 +27,16 @@ import com.example.douglaspfeifer.cinematch.ui.map.MapFragment;
 
 import com.example.douglaspfeifer.cinematch.ui.profile.ProfileFragment;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
+import com.example.douglaspfeifer.cinematch.utils.Utils;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 public class MainActivity extends BaseActivity {
@@ -52,7 +60,17 @@ public class MainActivity extends BaseActivity {
      * Logged user
      */
     private User mLoggedUser = new User();
-    private String mLoggedUserEmail;
+
+    /*
+     * Firebase
+     */
+    private Firebase mFirebaseUsersRef;
+
+    /*
+     * Shared Preferences
+     */
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +79,17 @@ public class MainActivity extends BaseActivity {
 
         // Firebase context
         Firebase.setAndroidContext(this);
+        /**
+         * Referênciando o nó de usuários no Firebase
+         */
+        mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS);
 
+        initializeScreen();
+    }
+
+    public void initializeScreen () {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        Bundle b = this.getIntent().getExtras();
-        if (b != null) {
-            mLoggedUser = b.getParcelable("loggedUser");
-        }
-
-        mLoggedUserEmail = mLoggedUser.getEmail();
 
         // Lista de abas e seus fragmentos
         List<Fragment> fragments = new Vector<>();
@@ -78,10 +97,9 @@ public class MainActivity extends BaseActivity {
         fragments.add(Fragment.instantiate(this, ProfileFragment.class.getName()));
         fragments.add(Fragment.instantiate(this, ChatFragment.class.getName()));
 
-
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), fragments, b);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), fragments);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -89,7 +107,6 @@ public class MainActivity extends BaseActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
     }
 
     @Override
@@ -121,17 +138,14 @@ public class MainActivity extends BaseActivity {
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private List<Fragment> fragments;
-        private Bundle fragmentBundle;
 
-        public SectionsPagerAdapter(FragmentManager fm, List<Fragment> fragments, Bundle data) {
+        public SectionsPagerAdapter(FragmentManager fm, List<Fragment> fragments) {
             super(fm);
-            fragmentBundle = data;
             this.fragments = fragments;
         }
 
         @Override
         public Fragment getItem(int position) {
-            fragments.get(position).setArguments(this.fragmentBundle);
             // getItem is called to instantiate the fragment for the given page.
             return fragments.get(position);
         }

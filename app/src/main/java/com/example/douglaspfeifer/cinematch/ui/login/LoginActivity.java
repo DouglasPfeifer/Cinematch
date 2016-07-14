@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -14,7 +15,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.douglaspfeifer.cinematch.R;
 import com.example.douglaspfeifer.cinematch.models.User;
@@ -34,10 +37,20 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.server.converter.StringToIntConverter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,32 +63,19 @@ import java.util.Map;
 
 public class LoginActivity extends BaseActivity {
 
-    Intent i;
+    private Intent i;
 
     /*
      * Firebase
      */
     private Firebase mFirebaseUsersRef;
-    private DataSnapshot mDataSnapshot;
+    private String mLoggedUserEmail;
 
     /*
      * Facebook
      */
     private LoginButton mLoginButton;
     private CallbackManager mCallbackManager;
-    private TextView mInfo;
-    private Bundle bundle;
-
-    /*
-     * Usuário
-     */
-    private User mLoggedUser;
-
-    /*
-     * Shared Preferences
-     */
-    SharedPreferences sharedPref;
-    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +87,6 @@ public class LoginActivity extends BaseActivity {
         }*/
 
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("Cinematch");
-        setContentView(R.layout.activity_login);
 
         /*
          * Inicialização de tela
@@ -108,15 +106,17 @@ public class LoginActivity extends BaseActivity {
      * Inicialização de tela
      */
     public void initializeScreen () {
-        i = new Intent(this, MainActivity.class);
-        sharedPref = getSharedPreferences("settings", 0);
-        editor = sharedPref.edit();
+        getSupportActionBar().setTitle("Cinematch");
+        setContentView(R.layout.activity_login);
 
-        mInfo = (TextView)findViewById(R.id.info);
+        i = new Intent(this, MainActivity.class);
+
+        // Initialize Firebase reference
+        mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS);
+
         mCallbackManager = CallbackManager.Factory.create();
         mLoginButton = (LoginButton)findViewById(R.id.button_facebookLogin);
         mLoginButton.setReadPermissions(Arrays.asList("email", "public_profile"));
-        mLoggedUser = new User();
     }
 
     /*
@@ -128,11 +128,11 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         /*
          * Se o seguinte bloco de código não for adicionado
          * `FacebookCallback` não será chamado
          */
-
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -143,134 +143,107 @@ public class LoginActivity extends BaseActivity {
 
         @Override
         public void onSuccess(LoginResult loginResult) {
+            AccessToken token = loginResult.getAccessToken();
 
-            GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+            final ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
+            dialog.setMessage("Logging....");
+            dialog.show();
+            Log.d("fbaccess", "Facebook AccessToken " + token.getToken());
+
+            mFirebaseUsersRef.authWithOAuthToken("facebook", token.getToken(), new Firebase.AuthResultHandler() {
+                @Override
+                public void onAuthenticated(AuthData authData) {
+                    Log.d("FBLOGIN", "The Facebook user is now authenticated with your Firebase app");
+
+                    // Upload data to firebase
+                    final Map<String, Object> userMap = new HashMap<String, Object>();
+                    Object objectMap = new HashMap<String, String>();
+
+                    if(authData.getProviderData().containsKey("displayName")) {
+                        userMap.put("name", authData.getProviderData().get("displayName").toString());
+                    }
+                    if(authData.getProviderData().containsKey("email")) {
+                        mLoggedUserEmail = Utils.encodeEmail(authData.getProviderData().get("email").toString());
+                        userMap.put("email", mLoggedUserEmail);
+                    }
+                    if(authData.getProviderData().containsKey("profileImageURL")) {
+                        userMap.put("profileImageURL", authData.getProviderData().get("profileImageURL").toString());
+                    }
+
+                    /*
+                    Isso nem é usado, mas se precisar de dados mais específicos, é só usar ele
+                    if(authData.getProviderData().containsKey("cachedUserProfile")) {
+                        objectMap = authData.getProviderData().get("cachedUserProfile");
+                    }
+                    */
+
+                    mFirebaseUsersRef.child(mLoggedUserEmail).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                // handle the case where the data already exists
+                                mFirebaseUsersRef.child(mLoggedUserEmail).updateChildren(userMap, new Firebase.CompletionListener() {
+                                    @Override
+                                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                                        if (firebaseError != null) {
+                                            System.out.println("Data could not be saved. " + firebaseError.getMessage());
+                                        }
+                                        else {
+                                            System.out.println("Data saved successfully.");
+                                            dialog.dismiss();
+                                            Toast.makeText(getApplicationContext(),"The Facebook user is now authenticated with your Firebase app",Toast.LENGTH_LONG).show();
+
+                                            startActivity(i);
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                // handle the case where the data does not yet exist
+                                userMap.put("description", "...");
+                                userMap.put("rating", 2.5f);
+                                userMap.put("numOfRates", 1);
+
+                                mFirebaseUsersRef.child(mLoggedUserEmail).updateChildren(userMap, new Firebase.CompletionListener() {
+                                    @Override
+                                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                                        if (firebaseError != null) {
+                                            System.out.println("Data could not be saved. " + firebaseError.getMessage());
+                                        }
+                                        else {
+                                            System.out.println("Data saved successfully.");
+                                            dialog.dismiss();
+                                            Toast.makeText(getApplicationContext(),"The Facebook user is now authenticated with your Firebase app",Toast.LENGTH_LONG).show();
+
+                                            startActivity(i);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) { }
+                    });
+
+                }
 
                 @Override
-                public void onCompleted(JSONObject object, GraphResponse response) {
-                // Get facebook data from login
-                getFacebookData(object);
+                public void onAuthenticationError(FirebaseError firebaseError) {
+                    // there was an error
+                    Log.d("FBLOGIN", "Tthere was an error with your Firebase app");
                 }
             });
-
-            Bundle parameters = new Bundle();
-
-            // Parâmetros que pediremos ao facebook
-            parameters.putString("fields", "id, first_name, last_name, email, gender");
-            request.setParameters(parameters);
-
-            request.executeAsync();
         }
 
         @Override
         public void onCancel() {
-            mInfo.setText("Login attempt canceled.");
+
         }
 
         @Override
         public void onError(FacebookException error) {
-            mInfo.setText("Login attempt failed.");
+
         }
-    }
-
-    private Bundle getFacebookData(final JSONObject object) {
-
-        final Map<String, Object> userMap = new HashMap<String, Object>();
-
-        // Preciso do email antes para achar o nó do usuário na lista de usuários do firebase
-        if (object.has(Constants.LOGIN_BUNDLE_EMAIL)) {
-            try {
-                mLoggedUser.setEmail(Utils.encodeEmail(object.getString(Constants.LOGIN_BUNDLE_EMAIL)));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            editor.putString("email", mLoggedUser.getEmail());
-        }
-
-        /**
-         * Referênciando o nó de usuários no Firebase
-         */
-        mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS).child(mLoggedUser.getEmail());
-
-        // mLoggedUser receive the data from firebase or null
-        mFirebaseUsersRef.addValueEventListener(new ValueEventListener() {
-
-            // Se o usuário já possui conta, mas é a primeira vez que usa após instalar o aplicativo
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    mLoggedUser = dataSnapshot.getValue(User.class);
-
-                    editor.putString("idFacebook", mLoggedUser.getIdFacebook());
-                    editor.putString("profilePic", mLoggedUser.getProfilePic());
-                    editor.putString("first_name", mLoggedUser.getFirst_name());
-                    editor.putString("last_name", mLoggedUser.getLast_name());
-                    editor.putString("gender", mLoggedUser.getGender());
-                    editor.putFloat("rating", mLoggedUser.getRating());
-                    editor.putString("description", mLoggedUser.getDescription());
-                    editor.putInt("numOfRates", mLoggedUser.getNumOfRates());
-
-                    editor.commit();
-
-                    startActivity(i);
-                } else {
-                    try {
-                        //put your value
-                        editor.putString("idFacebook", object.getString("id"));
-
-                        URL profilePic = new URL("https://graph.facebook.com/" + object.getString("id") + "/picture?width=200&height=150");
-                        editor.putString("profilePic", profilePic.toString());
-
-                        if (object.has(Constants.LOGIN_BUNDLE_FIRST_NAME)) {
-                            editor.putString(Constants.LOGIN_BUNDLE_FIRST_NAME, object.getString(Constants.LOGIN_BUNDLE_FIRST_NAME));
-                        }
-                        if (object.has(Constants.LOGIN_BUNDLE_LAST_NAME)) {
-                            editor.putString(Constants.LOGIN_BUNDLE_LAST_NAME, object.getString(Constants.LOGIN_BUNDLE_LAST_NAME));
-                        }
-                        if (object.has(Constants.LOGIN_BUNDLE_GENDER)) {
-                            editor.putString(Constants.LOGIN_BUNDLE_GENDER, object.getString(Constants.LOGIN_BUNDLE_GENDER));
-                        }
-                    } catch (MalformedURLException | JSONException e) {
-                        e.printStackTrace();
-                    }
-                    editor.putFloat("rating", 2.5f);
-                    editor.putString("description", "...");
-                    editor.putInt("numOfRates", 1);
-                    //commits your edits
-                    editor.commit();
-
-                    userMap.put("email", sharedPref.getString("email", ""));
-                    userMap.put("idFacebook", sharedPref.getString("idFacebook", ""));
-                    userMap.put("profilePic", sharedPref.getString("profilePic", ""));
-                    userMap.put("first_name", sharedPref.getString("first_name", ""));
-                    userMap.put("last_name", sharedPref.getString("last_name", ""));
-                    userMap.put("gender", sharedPref.getString("gender", ""));
-                    userMap.put("rating", 2.5);
-                    userMap.put("description", sharedPref.getString("description", "..."));
-                    userMap.put("numOfRates", sharedPref.getInt("numOfRates", 1));
-
-                    mFirebaseUsersRef.updateChildren(userMap, new Firebase.CompletionListener() {
-                        @Override
-                        public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                            if (firebaseError != null) {
-                                System.out.println("Data could not be saved. " + firebaseError.getMessage());
-                            }
-                            else {
-                                System.out.println("Data saved successfully.");
-                                startActivity(i);
-                            }
-                        }
-                    });
-                }
-            }
-
-            // Se o usuário não possui conta e é a primeira vez ou mais que usa o aplicativo
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
-        return null;
     }
 }

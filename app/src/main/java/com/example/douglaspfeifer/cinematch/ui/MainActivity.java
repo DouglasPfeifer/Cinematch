@@ -57,20 +57,9 @@ public class MainActivity extends BaseActivity {
     private ViewPager mViewPager;
 
     /*
-     * Logged user
-     */
-    private User mLoggedUser = new User();
-
-    /*
      * Firebase
      */
     private Firebase mFirebaseUsersRef;
-
-    /*
-     * Shared Preferences
-     */
-    SharedPreferences sharedPref;
-    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

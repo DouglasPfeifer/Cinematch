@@ -111,9 +111,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
     public void updateProfileData () {
         new DownloadImageTask(myProfileImage_imageView)
-                .execute(mLoggedUser.getProfilePic());
+                .execute(mLoggedUser.getProfileImageURL());
 
-        myProfileName_textView.setText(mLoggedUser.getFirst_name());
+        myProfileName_textView.setText(mLoggedUser.getName());
         myProfileRate_ratingBar.setRating(mLoggedUser.getRating());
         myProfileDescription_textView.setText(mLoggedUser.getDescription());
     }

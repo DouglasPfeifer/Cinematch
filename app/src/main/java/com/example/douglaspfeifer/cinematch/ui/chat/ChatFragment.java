@@ -83,7 +83,7 @@ public class ChatFragment extends Fragment {
         listView.setAdapter(mChatAdapter);
 
         // Listener for my listView
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override public void onItemClick(AdapterView<?> arg0, View arg1,int position, long arg3)
             {
@@ -91,6 +91,6 @@ public class ChatFragment extends Fragment {
                 i.putExtra("chatWith", chatList.get(position));
                 startActivity(i);
             }
-        });
+        });*/
     }
 }

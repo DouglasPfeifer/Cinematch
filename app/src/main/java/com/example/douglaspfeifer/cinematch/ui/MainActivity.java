@@ -33,7 +33,6 @@ import com.example.douglaspfeifer.cinematch.utils.Constants;
 import com.example.douglaspfeifer.cinematch.utils.Utils;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.net.MalformedURLException;
 import java.net.URL;

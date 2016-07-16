@@ -26,19 +26,12 @@
                 <de.hdodenhof.circleimageview.CircleImageView
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/myProfileImage_imageView"
-                    android:layout_width="140dp"
-                    android:layout_height="140dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:layout_centerHorizontal="true"
                     android:src="@drawable/profile_image"
                     app:border_color="#FF000000"/>
 
-                <Button
-                    android:id="@+id/editProfile_Button"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignRight="@+id/myProfileImage_imageView"
-                    />
             </RelativeLayout>
 
             <TextView
@@ -48,79 +41,31 @@
                 android:layout_gravity="center"
                 android:text="Aqui deveria estar o nome no banco de dados" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_gravity="center">
-
-                <RatingBar
-                    android:id="@+id/myProfileRate_ratingBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:isIndicator="true"
-                    />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:descendantFocusability="beforeDescendants"
-                android:focusableInTouchMode="true"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/myProfileDescription_textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:text="Aqui deveria estar a descrição no banco de dados" />
-            </LinearLayout>
-
             <GridLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_marginTop="16dp"
                 android:rowCount="4"
                 android:columnCount="4">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/myProfileFavGenre_imageView"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/profile_image"
-                        app:border_color="#FF000000" />
-                    <TextView
-                        android:id="@+id/myProfileFavGenre_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Fav Genre" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_margin="8dp"
-                    android:layout_gravity="center_vertical">
+                    android:layout_gravity="center_vertical"
+                    android:longClickable="true">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/myProfileGenre_imageView"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:id="@+id/aGenre_imageView"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
                         android:src="@drawable/profile_image"
                         app:border_color="#FF000000" />
                     <TextView
-                        android:id="@+id/myProfileGenre_textView"
+                        android:id="@+id/aGenre_textView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"

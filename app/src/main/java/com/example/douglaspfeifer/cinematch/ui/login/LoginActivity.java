@@ -1,6 +1,7 @@
 package com.example.douglaspfeifer.cinematch.ui.login;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
@@ -23,6 +24,7 @@ import com.example.douglaspfeifer.cinematch.R;
 import com.example.douglaspfeifer.cinematch.models.User;
 import com.example.douglaspfeifer.cinematch.ui.BaseActivity;
 import com.example.douglaspfeifer.cinematch.ui.MainActivity;
+import com.example.douglaspfeifer.cinematch.ui.chat.ConversationActivity;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
 import com.example.douglaspfeifer.cinematch.utils.Utils;
 import com.facebook.AccessToken;
@@ -66,10 +68,16 @@ public class LoginActivity extends BaseActivity {
     private Intent i;
 
     /*
+     * User data
+     */
+    private String mLoggedUserEmail;
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
+
+    /*
      * Firebase
      */
     private Firebase mFirebaseUsersRef;
-    private String mLoggedUserEmail;
 
     /*
      * Facebook
@@ -81,10 +89,10 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // Se o usuário já possui conta e não é a primeira vez que usa o aplicativo após a instalação
-        /*if (AccessToken.getCurrentAccessToken() != null) {
+        if (AccessToken.getCurrentAccessToken() != null) {
             i = new Intent(this, MainActivity.class);
             startActivity(i);
-        }*/
+        }
 
         super.onCreate(savedInstanceState);
 
@@ -110,6 +118,10 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
 
         i = new Intent(this, MainActivity.class);
+
+        // Shared preferences
+        sharedPref = getSharedPreferences("settings", 0);
+        editor = sharedPref.edit();
 
         // Initialize Firebase reference
         mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS);
@@ -165,6 +177,9 @@ public class LoginActivity extends BaseActivity {
                     if(authData.getProviderData().containsKey("email")) {
                         mLoggedUserEmail = Utils.encodeEmail(authData.getProviderData().get("email").toString());
                         userMap.put("email", mLoggedUserEmail);
+
+                        editor.putString("userEmail", mLoggedUserEmail);
+                        editor.commit();
                     }
                     if(authData.getProviderData().containsKey("profileImageURL")) {
                         userMap.put("profileImageURL", authData.getProviderData().get("profileImageURL").toString());
@@ -180,46 +195,22 @@ public class LoginActivity extends BaseActivity {
                     mFirebaseUsersRef.child(mLoggedUserEmail).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                // handle the case where the data already exists
-                                mFirebaseUsersRef.child(mLoggedUserEmail).updateChildren(userMap, new Firebase.CompletionListener() {
-                                    @Override
-                                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                                        if (firebaseError != null) {
-                                            System.out.println("Data could not be saved. " + firebaseError.getMessage());
-                                        }
-                                        else {
-                                            System.out.println("Data saved successfully.");
-                                            dialog.dismiss();
-                                            Toast.makeText(getApplicationContext(),"The Facebook user is now authenticated with your Firebase app",Toast.LENGTH_LONG).show();
-
-                                            startActivity(i);
-                                        }
+                            // handle the case where the data already exists
+                            mFirebaseUsersRef.child(mLoggedUserEmail).updateChildren(userMap, new Firebase.CompletionListener() {
+                                @Override
+                                public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                                    if (firebaseError != null) {
+                                        System.out.println("Data could not be saved. " + firebaseError.getMessage());
                                     }
-                                });
-                            }
-                            else {
-                                // handle the case where the data does not yet exist
-                                userMap.put("description", "...");
-                                userMap.put("rating", 2.5f);
-                                userMap.put("numOfRates", 1);
+                                    else {
+                                        System.out.println("Data saved successfully.");
+                                        dialog.dismiss();
+                                        Toast.makeText(getApplicationContext(),"The Facebook user is now authenticated with your Firebase app",Toast.LENGTH_LONG).show();
 
-                                mFirebaseUsersRef.child(mLoggedUserEmail).updateChildren(userMap, new Firebase.CompletionListener() {
-                                    @Override
-                                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                                        if (firebaseError != null) {
-                                            System.out.println("Data could not be saved. " + firebaseError.getMessage());
-                                        }
-                                        else {
-                                            System.out.println("Data saved successfully.");
-                                            dialog.dismiss();
-                                            Toast.makeText(getApplicationContext(),"The Facebook user is now authenticated with your Firebase app",Toast.LENGTH_LONG).show();
-
-                                            startActivity(i);
-                                        }
+                                        startActivity(i);
                                     }
-                                });
-                            }
+                                }
+                            });
                         }
 
                         @Override

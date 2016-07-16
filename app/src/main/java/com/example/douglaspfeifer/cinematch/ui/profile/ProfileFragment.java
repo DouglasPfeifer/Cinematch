@@ -37,14 +37,11 @@ import java.net.URL;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ProfileFragment extends Fragment implements View.OnClickListener{
+public class ProfileFragment extends Fragment {
 
     // Layout
-    Button editButton;
     ImageView myProfileImage_imageView;
     TextView myProfileName_textView;
-    RatingBar myProfileRate_ratingBar;
-    TextView myProfileDescription_textView;
 
     // Logged User
     private User mLoggedUser;
@@ -73,21 +70,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         // Set user email
         mLoggedUser = new User();
         SharedPreferences sharedPref = getActivity().getSharedPreferences("settings", 0);
-        mLoggedUser.setEmail(sharedPref.getString("email", ""));
+        mLoggedUser.setEmail(sharedPref.getString("userEmail", ""));
 
         // Instantiate the views
         myProfileImage_imageView = (ImageView) rootView.findViewById(R.id.myProfileImage_imageView);
         myProfileName_textView = (TextView) rootView.findViewById(R.id.myProfileName_textView);
-        myProfileRate_ratingBar = (RatingBar) rootView.findViewById(R.id.myProfileRate_ratingBar);
-        myProfileDescription_textView = (TextView) rootView.findViewById(R.id.myProfileDescription_textView);
-        editButton = (Button) rootView.findViewById(R.id.editProfile_Button);
-        editButton.setOnClickListener(this);
 
         // Get a reference to our user
         mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS).child(mLoggedUser.getEmail());
-
-        Button editButton = (Button) rootView.findViewById(R.id.editProfile_Button);
-        editButton.setOnClickListener(this);
     }
 
     public void attachFirebaseListener () {
@@ -114,8 +104,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                 .execute(mLoggedUser.getProfileImageURL());
 
         myProfileName_textView.setText(mLoggedUser.getName());
-        myProfileRate_ratingBar.setRating(mLoggedUser.getRating());
-        myProfileDescription_textView.setText(mLoggedUser.getDescription());
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -141,19 +129,5 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }
-    }
-
-    @Override
-    public void onClick (View v) {
-        switch (v.getId()) {
-            case R.id.editProfile_Button:
-                editProfile();
-                break;
-        }
-    }
-
-    public void editProfile () {
-        Intent intent = new Intent(getActivity(), EditableProfileActivity.class);
-        startActivity(intent);
     }
 }

@@ -1,13 +1,16 @@
 package com.example.douglaspfeifer.cinematch.ui.chat;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.douglaspfeifer.cinematch.R;
 import com.example.douglaspfeifer.cinematch.ui.MainActivity;
@@ -32,6 +35,16 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        // Layout wich will be inflated for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
+
+        initializeScreen(rootView);
+
+        // Inflate the layout for this fragment
+        return rootView;
+    }
+
+    private void initializeScreen (View rootView) {
         // Create some dummy data for the ListView.
         String[] data = {
                 "TEXT - 1",
@@ -54,7 +67,7 @@ public class ChatFragment extends Fragment {
                 "TEXT - 18"
         };
         // Make the data a list
-        List<String> chatList = new ArrayList<String>(Arrays.asList(data));
+        final List<String> chatList = new ArrayList<String>(Arrays.asList(data));
 
         // Create a ListView adapter for the chat list
         mChatAdapter =
@@ -65,15 +78,19 @@ public class ChatFragment extends Fragment {
                         chatList // This is the data
                 );
 
-        // Layout wich will be inflated for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
-
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listView_chat);
         listView.setAdapter(mChatAdapter);
 
-        // Inflate the layout for this fragment
-        return rootView;
+        // Listener for my listView
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override public void onItemClick(AdapterView<?> arg0, View arg1,int position, long arg3)
+            {
+                Intent i = new Intent(getActivity(), ConversationActivity.class);
+                i.putExtra("chatWith", chatList.get(position));
+                startActivity(i);
+            }
+        });
     }
-
 }

@@ -55,10 +55,6 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
 
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" />
-
         <service
             android:name=".ui.map.MyLocationListenerService"
             android:enabled="true"

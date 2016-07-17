@@ -41,38 +41,19 @@
                 android:layout_gravity="center"
                 android:text="Aqui deveria estar o nome no banco de dados" />
 
-            <GridLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp"
-                android:rowCount="4"
-                android:columnCount="4">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_margin="8dp"
-                    android:layout_gravity="center_vertical"
-                    android:longClickable="true">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/aGenre_imageView"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:src="@drawable/profile_image"
-                        app:border_color="#FF000000" />
-                    <TextView
-                        android:id="@+id/aGenre_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Genre" />
-                </LinearLayout>
-
-            </GridLayout>
+            <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/genre_gridView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:columnWidth="80dp"
+                android:numColumns="auto_fit"
+                android:
+                android:verticalSpacing="8dp"
+                android:horizontalSpacing="8dp"
+                android:padding="16dp"
+                android:stretchMode="columnWidth"
+                android:gravity="center"
+                />
 
         </LinearLayout>
 

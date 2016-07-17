@@ -1,5 +1,6 @@
 package com.example.douglaspfeifer.cinematch.ui.profile;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -12,16 +13,24 @@ import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.douglaspfeifer.cinematch.R;
+import com.example.douglaspfeifer.cinematch.models.ItemObject;
 import com.example.douglaspfeifer.cinematch.models.User;
 import com.example.douglaspfeifer.cinematch.ui.MainActivity;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
@@ -33,6 +42,8 @@ import com.firebase.client.realtime.util.StringListReader;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,12 +53,17 @@ public class ProfileFragment extends Fragment {
     // Layout
     ImageView myProfileImage_imageView;
     TextView myProfileName_textView;
+    GridView gridView;
+
 
     // Logged User
     private User mLoggedUser;
 
     // Firebase
     private Firebase mFirebaseUsersRef;
+
+    static final String[] MOBILE_OS = new String[] {
+            "Android", "iOS","Windows", "Blackberry" };
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -70,11 +86,24 @@ public class ProfileFragment extends Fragment {
         // Set user email
         mLoggedUser = new User();
         SharedPreferences sharedPref = getActivity().getSharedPreferences("settings", 0);
-        mLoggedUser.setEmail(sharedPref.getString("userEmail", ""));
+        mLoggedUser.setEmail(sharedPref.getString("userEmail", null));
 
         // Instantiate the views
         myProfileImage_imageView = (ImageView) rootView.findViewById(R.id.myProfileImage_imageView);
         myProfileName_textView = (TextView) rootView.findViewById(R.id.myProfileName_textView);
+
+        gridView = (GridView) rootView.findViewById(R.id.genre_gridView);
+
+        List<ItemObject> allItems = getAllItemObject();
+        CustomAdapter customAdapter = new CustomAdapter(getContext(), allItems);
+        gridView.setAdapter(customAdapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getContext(), "Position: " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Get a reference to our user
         mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS).child(mLoggedUser.getEmail());
@@ -129,5 +158,35 @@ public class ProfileFragment extends Fragment {
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }
+    }
+
+    private List<ItemObject> getAllItemObject(){
+        ItemObject itemObject = null;
+        List<ItemObject> items = new ArrayList<>();
+        items.add(new ItemObject("Image One", "one"));
+        items.add(new ItemObject("Image Two", "two"));
+        items.add(new ItemObject("Image Three", "three"));
+        items.add(new ItemObject("Image Four", "four"));
+        items.add(new ItemObject("Image Five", "five"));
+        items.add(new ItemObject("Image Six", "six"));
+        items.add(new ItemObject("Image Seven", "seven"));
+        items.add(new ItemObject("Image Eight", "eight"));
+        items.add(new ItemObject("Image One", "one"));
+        items.add(new ItemObject("Image Two", "two"));
+        items.add(new ItemObject("Image Three", "three"));
+        items.add(new ItemObject("Image Four", "four"));
+        items.add(new ItemObject("Image Five", "five"));
+        items.add(new ItemObject("Image Six", "six"));
+        items.add(new ItemObject("Image Seven", "seven"));
+        items.add(new ItemObject("Image Eight", "eight"));
+        items.add(new ItemObject("Image One", "one"));
+        items.add(new ItemObject("Image Two", "two"));
+        items.add(new ItemObject("Image Three", "three"));
+        items.add(new ItemObject("Image Four", "four"));
+        items.add(new ItemObject("Image Five", "five"));
+        items.add(new ItemObject("Image Six", "six"));
+        items.add(new ItemObject("Image Seven", "seven"));
+        items.add(new ItemObject("Image Eight", "eight"));
+        return items;
     }
 }

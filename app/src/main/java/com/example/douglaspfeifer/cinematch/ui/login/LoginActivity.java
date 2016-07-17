@@ -136,6 +136,7 @@ public class LoginActivity extends BaseActivity {
                     final Map<String, Object> userMap = new HashMap<String, Object>();
 
                     if(authData.getProviderData().containsKey("displayName")) {
+                        editor.putString("userName", authData.getProviderData().get("displayName").toString());
                         userMap.put("name", authData.getProviderData().get("displayName").toString());
                     }
                     if(authData.getProviderData().containsKey("email")) {

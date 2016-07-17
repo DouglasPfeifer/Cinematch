@@ -1,9 +1,6 @@
 package com.example.douglaspfeifer.cinematch.ui;
 
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -11,34 +8,20 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.douglaspfeifer.cinematch.R;
-import com.example.douglaspfeifer.cinematch.models.User;
 import com.example.douglaspfeifer.cinematch.ui.chat.ChatFragment;
-import com.example.douglaspfeifer.cinematch.ui.map.MapFragment;
+import com.example.douglaspfeifer.cinematch.ui.map.MyMapFragment;
 
 import com.example.douglaspfeifer.cinematch.ui.profile.ProfileFragment;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
-import com.example.douglaspfeifer.cinematch.utils.Utils;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 public class MainActivity extends BaseActivity {
@@ -70,6 +53,8 @@ public class MainActivity extends BaseActivity {
 
         // Firebase context
         Firebase.setAndroidContext(this);
+
+
         /**
          * Referênciando o nó de usuários no Firebase
          */
@@ -84,7 +69,7 @@ public class MainActivity extends BaseActivity {
 
         // Lista de abas e seus fragmentos
         List<Fragment> fragments = new Vector<>();
-        fragments.add(Fragment.instantiate(this, MapFragment.class.getName()));
+        fragments.add(Fragment.instantiate(this, MyMapFragment.class.getName()));
         fragments.add(Fragment.instantiate(this, ProfileFragment.class.getName()));
         fragments.add(Fragment.instantiate(this, ChatFragment.class.getName()));
 

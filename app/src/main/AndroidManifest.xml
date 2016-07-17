@@ -45,7 +45,6 @@
         </activity>
         <activity android:name=".ui.BaseActivity" />
 
-<<<<<<< Updated upstream
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -59,9 +58,7 @@
             android:name=".ui.map.MyLocationListenerService"
             android:enabled="true"
             android:exported="true"></service>
-=======
-        <activity android:name=".ui.BaseActivity" />
-
+        
         <activity
             android:name=".ui.chat.ConversationActivity"
             android:label="@string/title_activity_conversation"
@@ -71,7 +68,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.douglaspfeifer.cinematch.ui.chat.ConversationActivity" />
         </activity>
->>>>>>> Stashed changes
     </application>
 
 </manifest>

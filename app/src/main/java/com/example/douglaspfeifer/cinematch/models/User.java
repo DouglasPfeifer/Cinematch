@@ -6,16 +6,11 @@ import android.os.Parcelable;
 public class User {
 
     private String email;
-<<<<<<< Updated upstream
-    private Double latitude;
-    private Double longitude;
     private String name;
     private String profileImageURL;
-=======
     private Object chats;
     private Double latitude;
     private Double longitude;
->>>>>>> Stashed changes
 
     public User() {
 
@@ -47,8 +42,6 @@ public class User {
         this.email = email;
     }
 
-<<<<<<< Updated upstream
-=======
 
     public Object getChats() {
         return chats;
@@ -58,7 +51,7 @@ public class User {
         this.chats = chats;
     }
 
->>>>>>> Stashed changes
+
     public Double getLatitude() {
         return latitude;
     }
@@ -66,6 +59,7 @@ public class User {
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
+
 
     public Double getLongitude() {
         return longitude;

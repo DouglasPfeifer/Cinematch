@@ -47,7 +47,6 @@
                 android:layout_height="match_parent"
                 android:columnWidth="80dp"
                 android:numColumns="auto_fit"
-                android:
                 android:verticalSpacing="8dp"
                 android:horizontalSpacing="8dp"
                 android:padding="16dp"

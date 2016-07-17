@@ -44,6 +44,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseError;
@@ -54,7 +55,7 @@ import com.google.firebase.database.FirebaseDatabase;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MyMapFragment extends Fragment implements OnMapReadyCallback{
+public class MyMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
 
     // private OnMapReadyCallback callback;
@@ -76,9 +77,6 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        if (!FirebaseApp.getApps(getContext()).isEmpty()) {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        }
 
         sharedPref = getContext().getSharedPreferences("settings", 0);
         mLoggedUserEmail = sharedPref.getString("userEmail", null);
@@ -166,10 +164,6 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback{
 
             }
         });
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(latitude, longitude))
-                .title("Marker")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.me_map_icon)));
 
     }
 
@@ -179,46 +173,52 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback{
         else {
             setMyPos();
             getContext().startService(new Intent(getContext(), MyLocationListenerService.class));
-
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-
-            GeoFire geoFire = new GeoFire(ref);
-            geoFire.setLocation(mLoggedUserEmail, new GeoLocation(latitude, longitude));
-
-            GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(latitude, longitude), 0.6);
-            geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
-                @Override
-                public void onKeyEntered(String key, GeoLocation location) {
-                    googleMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(location.latitude, location.longitude))
-                            .title(key)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.me_map_icon)));
-                }
-
-                @Override
-                public void onKeyExited(String key) {
-
-                }
-
-                @Override
-                public void onKeyMoved(String key, GeoLocation location) {
-
-                }
-
-                @Override
-                public void onGeoQueryReady() {
-
-                }
-
-                @Override
-                public void onGeoQueryError(DatabaseError error) {
-
-                }
-            });
         }
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
+        googleMap.setOnMarkerClickListener(this);
+        GeoFire geoFire = new GeoFire(ref);
+        geoFire.setLocation(mLoggedUserEmail, new GeoLocation(latitude, longitude));
+
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(latitude, longitude), 2);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(location.latitude, location.longitude))
+                        .title(key)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.me_map_icon)));
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+    }
+
+    public boolean onMarkerClick(Marker marker) {
+        Log.i("Marker clicked", marker.getTitle());
+        return false;
     }
 
     private void changeCamera(CameraUpdate update, GoogleMap.CancelableCallback callback) {
-        googleMap.animateCamera(update, callback);
+        googleMap.moveCamera(update);
+        //googleMap.animateCamera(update, callback);
     }
 }

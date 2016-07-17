@@ -54,6 +54,10 @@ public class MainActivity extends BaseActivity {
         // Firebase context
         Firebase.setAndroidContext(this);
 
+        if (!FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        }
+
 
         /**
          * Referênciando o nó de usuários no Firebase

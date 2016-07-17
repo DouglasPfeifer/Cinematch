@@ -134,7 +134,6 @@ public class LoginActivity extends BaseActivity {
 
                     // Upload data to firebase
                     final Map<String, Object> userMap = new HashMap<String, Object>();
-                    Object objectMap = new HashMap<String, String>();
 
                     if(authData.getProviderData().containsKey("displayName")) {
                         userMap.put("name", authData.getProviderData().get("displayName").toString());

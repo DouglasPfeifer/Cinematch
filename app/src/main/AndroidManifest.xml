@@ -34,7 +34,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyDmef-RxEg7M9z3WYVfKpAHTLqcxcZ2hJU" />
+            android:value="AIzaSyC7UmAKH2DWc3tfCISuUEoytOUJVHcGGIU" />
 
         <activity android:name=".ui.login.LoginActivity">
             <intent-filter>

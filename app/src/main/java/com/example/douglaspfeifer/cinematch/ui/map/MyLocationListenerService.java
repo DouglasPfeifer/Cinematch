@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.douglaspfeifer.cinematch.utils.Constants;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 import com.firebase.client.snapshot.DoubleNode;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -47,8 +48,9 @@ public class MyLocationListenerService extends Service
         mLoggedUserEmail = sharedPref.getString("userEmail", null);
         usersRef = new Firebase(Constants.FIREBASE_URL_USERS);
         myRef = usersRef.child(mLoggedUserEmail);
-        geoFRef = new Firebase(Constants.FIREBASE_URL + "/geofire");
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_URL + "/geofire");
+
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
         geoFire = new GeoFire(ref);
         intent = new Intent(BROADCAST_ACTION);
     }

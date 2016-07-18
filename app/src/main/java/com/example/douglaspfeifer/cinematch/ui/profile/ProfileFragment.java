@@ -45,6 +45,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.widget.AdapterView.*;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -95,12 +97,14 @@ public class ProfileFragment extends Fragment {
         gridView = (GridView) rootView.findViewById(R.id.genre_gridView);
 
         List<ItemObject> allItems = getAllItemObject();
+        allItems.get(1).setImageResource("drawables/me_map_icon");
         CustomAdapter customAdapter = new CustomAdapter(getContext(), allItems);
         gridView.setAdapter(customAdapter);
-
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                gridView.setItemChecked(position, true);
                 Toast.makeText(getContext(), "Position: " + position, Toast.LENGTH_SHORT).show();
             }
         });
@@ -161,7 +165,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private List<ItemObject> getAllItemObject(){
-        ItemObject itemObject = null;
         List<ItemObject> items = new ArrayList<>();
         items.add(new ItemObject("Image One", "one"));
         items.add(new ItemObject("Image Two", "two"));

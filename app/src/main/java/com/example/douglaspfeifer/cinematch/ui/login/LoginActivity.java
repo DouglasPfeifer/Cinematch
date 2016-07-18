@@ -54,10 +54,10 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // Se o usuário já possui conta e não é a primeira vez que usa o aplicativo após a instalação
-        if (AccessToken.getCurrentAccessToken() != null) {
+        /*if (AccessToken.getCurrentAccessToken() != null) {
             i = new Intent(this, MainActivity.class);
             startActivity(i);
-        }
+        }*/
 
         super.onCreate(savedInstanceState);
 

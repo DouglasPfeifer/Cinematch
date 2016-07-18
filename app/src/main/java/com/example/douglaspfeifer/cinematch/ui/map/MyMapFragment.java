@@ -180,11 +180,10 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
             getContext().startService(new Intent(getContext(), MyLocationListenerService.class));
         }
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geoFire");
         googleMap.setOnMarkerClickListener(this);
         GeoFire geoFire = new GeoFire(ref);
         geoFire.setLocation(mLoggedUserEmail, new GeoLocation(latitude, longitude));
-        geoFire.setLocation("douglaspfeifer@gmail,com", new GeoLocation(latitude+0.001, longitude));
 
         GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(latitude, longitude), 2);
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
@@ -219,6 +218,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
     }
 
     public boolean onMarkerClick(Marker marker) {
+        mBottomSheetBehavior.setHideable(true);
         mBottomSheetBehavior.setPeekHeight(500);
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         Log.i("Marker clicked", marker.getTitle());

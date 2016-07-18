@@ -1,11 +1,10 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragmented_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
-
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -18,19 +17,30 @@
     <ScrollView
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="match_parent"
         android:clipToPadding="true"
-        android:background="@android:color/black"
+        android:background="@android:color/transparent"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
         >
 
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@android:color/white"
-            android:text="Nada, nada, nada"
-            android:padding="36dp"
-            android:textSize="16sp"/>
+            android:layout_height="match_parent">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/bottomProfileImage_imageView"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/profile_image"
+                app:border_color="#FF000000"/>
+            <LinearLayout
+                android:layout_alignBottom="@id/bottomProfileImage_imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="50dp"
+                android:background="@android:color/white">
+            </LinearLayout>
+        </RelativeLayout>
 
     </ScrollView>
 

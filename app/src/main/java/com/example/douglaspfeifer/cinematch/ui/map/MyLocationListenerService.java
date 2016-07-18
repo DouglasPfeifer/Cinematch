@@ -50,7 +50,7 @@ public class MyLocationListenerService extends Service
         myRef = usersRef.child(mLoggedUserEmail);
 
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geoFire");
         geoFire = new GeoFire(ref);
         intent = new Intent(BROADCAST_ACTION);
     }
@@ -60,8 +60,8 @@ public class MyLocationListenerService extends Service
     {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         listener = new MyLocationListener();
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 0, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, listener);
     }
 
     @Override

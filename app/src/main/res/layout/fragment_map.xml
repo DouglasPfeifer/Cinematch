@@ -50,7 +50,17 @@
             android:layout_height="match_parent"
             android:layout_below="@id/fView"
             android:background="@android:color/white"
-            android:orientation="horizontal"></LinearLayout>
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/nameBottom"
+                android:text="Name"
+                android:paddingTop="50dp"
+                />
+        </LinearLayout>
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/bottomProfileImage_imageView"

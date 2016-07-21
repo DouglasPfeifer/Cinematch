@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.douglaspfeifer.cinematch.R;
 import com.example.douglaspfeifer.cinematch.models.User;
@@ -128,29 +129,37 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
 
         View bottomSheet = v.findViewById( R.id.bottom_sheet );
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+
+            float StartingMoveY;
+
             @Override
             public void onStateChanged(View bottomSheet, int newState) {
             }
 
             @Override
-            public void onSlide(final View bottomSheet, float slideOffset) {
+            public void onSlide(final View bottomSheet, final float slideOffset) {
                 bottomSheet.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         int action = MotionEventCompat.getActionMasked(event);
                         switch (action) {
                             case MotionEvent.ACTION_DOWN:
-                                if( mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED )
+                                StartingMoveY = event.getRawY();
+                                break;
+                            case MotionEvent.ACTION_MOVE:
+                                if( mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED
+                                        && StartingMoveY - event.getRawY() > 100)
                                 {
                                     Intent i = new Intent(getContext(), LoginActivity.class);
                                     i.putExtra("otherUserEmail", clickedUser.getEmail());
-                                    startActivity(i);
-                                }
-                                return false;
+                                    startActivity(i);}
+                                break;
                             default:
                                 return true;
                         }
+                        return true;
                     }
                 });
             }
@@ -198,28 +207,30 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
     public void setMyPos()
     {
         LocationManager lm = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
+
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        longitude = location.getLongitude();
-        latitude = location.getLatitude();
+        if( location != null ) {
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
 
-        CameraPosition MyPos =
-                new CameraPosition.Builder().target(new LatLng(latitude, longitude))
-                        .zoom(15.5f)
-                        .bearing(0)
-                        .tilt(25)
-                        .build();
-        changeCamera(CameraUpdateFactory.newCameraPosition(MyPos), new GoogleMap.CancelableCallback() {
-            @Override
-            public void onFinish() {
+            CameraPosition MyPos =
+                    new CameraPosition.Builder().target(new LatLng(latitude, longitude))
+                            .zoom(15.5f)
+                            .bearing(0)
+                            .tilt(25)
+                            .build();
+            changeCamera(CameraUpdateFactory.newCameraPosition(MyPos), new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
 
-            }
+                }
 
-            @Override
-            public void onCancel() {
+                @Override
+                public void onCancel() {
 
-            }
-        });
-
+                }
+            });
+        }
     }
 
 
@@ -237,10 +248,12 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                Markers.put(key, googleMap.addMarker(new MarkerOptions()
+                Marker newMarker = googleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(location.latitude, location.longitude))
                         .title(key)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.me_map_icon))));
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.me_map_icon)));
+                newMarker.hideInfoWindow();
+                Markers.put(key, newMarker);
             }
 
             @Override
@@ -336,6 +349,9 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
             mBottomSheetBehavior.setHideable(true);
             mBottomSheetBehavior.setPeekHeight(500);
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+            TextView text = (TextView) getView().findViewById(R.id.nameBottom);
+            text.setText(clickedUser.getName());
         }
     }
 }

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -25,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,6 +34,7 @@ import android.widget.TextView;
 import com.example.douglaspfeifer.cinematch.R;
 import com.example.douglaspfeifer.cinematch.models.User;
 import com.example.douglaspfeifer.cinematch.ui.MainActivity;
+import com.example.douglaspfeifer.cinematch.ui.chat.ConversationActivity;
 import com.example.douglaspfeifer.cinematch.ui.login.LoginActivity;
 import com.example.douglaspfeifer.cinematch.ui.profile.OtherProfileActivity;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
@@ -56,6 +59,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -67,6 +71,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -92,11 +98,18 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
     Firebase usersRef, myRef;
     ImageView imageBottomSheet;
 
+    String chatId;
+    Intent i;
 
     private Map<String, Marker> Markers;
 
     private Firebase UserRefer;
+    private Firebase newChatRef;
+    private Firebase newUserChatRef;
+    private Firebase otherUserChatRef;
     private User clickedUser;
+
+    private Button iniciarConversaButton;
 
     private View v;
 
@@ -109,9 +122,12 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
         usersRef = new Firebase(Constants.FIREBASE_URL_USERS);
         myRef = usersRef.child(mLoggedUserEmail);
         Markers = new HashMap<>();
-
         v = inflater.inflate(R.layout.fragment_map, container, false);
 
+        i = new Intent(getContext(), ConversationActivity.class);
+
+
+        iniciarConversaButton = (Button) v.findViewById(R.id.iniciarConversaButton);
 
 
         SupportMapFragment mSupportMapFragment;
@@ -132,45 +148,6 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
 
         View bottomSheet = v.findViewById( R.id.bottom_sheet );
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-
-            float StartingMoveY, MovedY;
-
-            @Override
-            public void onStateChanged(View bottomSheet, int newState) {
-            }
-
-            @Override
-            public void onSlide(final View bottomSheet, final float slideOffset) {
-                bottomSheet.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        int action = MotionEventCompat.getActionMasked(event);
-                        switch (action) {
-                            case MotionEvent.ACTION_DOWN:
-                                StartingMoveY = event.getRawY();
-                                break;
-                            case MotionEvent.ACTION_MOVE:
-                                    MovedY = event.getRawY();
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                if( mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED
-                                        && StartingMoveY - MovedY > 200)
-                                {
-                                    Intent i = new Intent(getContext(), OtherProfileActivity.class);
-                                    i.putExtra("otherUserEmail", clickedUser.getEmail());
-                                    startActivity(i);
-                                }
-                                break;
-                            default:
-                                return true;
-                        }
-                        return true;
-                    }
-                });
-            }
-        });
         return v;
     }
 
@@ -184,7 +161,6 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
     @Override
     public void onSaveInstanceState(Bundle outState) {
 
-        super.onSaveInstanceState(outState);
     }
 
     private final LocationListener locationListener = new LocationListener() {
@@ -362,9 +338,58 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
             mBottomSheetBehavior.setPeekHeight(1000);
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
+            CircleImageView imageGender = (CircleImageView) v.findViewById(R.id.bottomGenderImage_imageView);
+            imageGender.setImageResource(clickedUser.getGenero() );
             TextView text = (TextView) v.findViewById(R.id.nameBottom);
             text.setText(clickedUser.getName());
+            setButton();
 
         }
+    }
+
+
+    public void setButton () {
+        usersRef.child(mLoggedUserEmail).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if( clickedUser.getEmail() == null ) return;
+                if (snapshot.child("chats").child(clickedUser.getEmail()).exists()) {
+                    chatId = snapshot.child("chats").child(clickedUser.getEmail()).getValue().toString();
+                    continuarConversa();
+                }
+                else {
+                    iniciarConversa();
+                }
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+    }
+    public void iniciarConversa () {
+        iniciarConversaButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                newChatRef = new Firebase(Constants.FIREBASE_URL).child("chat").push();
+                newUserChatRef = usersRef.child(mLoggedUserEmail).child("chats").child(clickedUser.getEmail());
+                otherUserChatRef = usersRef.child(clickedUser.getEmail()).child("chats").child(mLoggedUserEmail);
+                // Get the unique ID generated by push()
+                chatId = newChatRef.getKey();
+                newUserChatRef.setValue(chatId);
+                otherUserChatRef.setValue(chatId);
+                i.putExtra("chatNode", chatId);
+                i.putExtra("chatName", clickedUser.getEmail());
+                startActivity(i);
+            }
+        });
+    }
+    public void continuarConversa () {
+        iniciarConversaButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                i.putExtra("chatNode", chatId);
+                i.putExtra("chatName", clickedUser.getEmail());
+                startActivity(i);
+            }
+        });
     }
 }

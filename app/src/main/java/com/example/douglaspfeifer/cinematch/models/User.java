@@ -7,7 +7,7 @@ public class User {
 
     private String email;
     private String name;
-    private String genero;
+    private int genero;
     private String profileImageURL;
     private Object chats;
     private Double latitude;
@@ -70,11 +70,11 @@ public class User {
         this.longitude = longitude;
     }
 
-    public String getGenero() {
+    public int getGenero() {
         return genero;
     }
 
-    public void setGenero(String genero) {
+    public void setGenero(int genero) {
         this.genero = genero;
     }
 }

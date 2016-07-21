@@ -57,6 +57,8 @@ public class LoginActivity extends BaseActivity {
         if (AccessToken.getCurrentAccessToken() != null) {
             i = new Intent(this, MainActivity.class);
             startActivity(i);
+            if (AccessToken.getCurrentAccessToken() != null)
+                finish();
         }
 
         super.onCreate(savedInstanceState);
@@ -178,7 +180,8 @@ public class LoginActivity extends BaseActivity {
                                         Toast.makeText(getApplicationContext(),"The Facebook user is now authenticated with your Firebase app",Toast.LENGTH_LONG).show();
 
                                         startActivity(i);
-
+                                        if (AccessToken.getCurrentAccessToken() != null)
+                                            finish();
                                         if(getSharedPreferences("settings", 0).getString("userEmail", null) != null)
                                             finish();
                                     }

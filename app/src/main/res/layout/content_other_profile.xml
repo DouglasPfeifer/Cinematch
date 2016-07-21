@@ -39,12 +39,5 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Aqui deveria estar o nome no banco de dados" />
-        <Button
-            android:id="@+id/iniciarConversaButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_gravity="center_horizontal"
-            android:text="Conversar"/>
     </LinearLayout>
 </RelativeLayout>

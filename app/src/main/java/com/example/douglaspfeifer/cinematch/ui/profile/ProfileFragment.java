@@ -1,5 +1,6 @@
 package com.example.douglaspfeifer.cinematch.ui.profile;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,11 +34,14 @@ import com.example.douglaspfeifer.cinematch.models.ItemObject;
 import com.example.douglaspfeifer.cinematch.models.User;
 import com.example.douglaspfeifer.cinematch.ui.MainActivity;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
+import com.facebook.login.LoginManager;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.firebase.client.realtime.util.StringListReader;
+import com.firebase.geofire.GeoFire;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,6 +55,7 @@ public class ProfileFragment extends Fragment {
     ImageView myProfileImage_imageView;
     TextView myProfileName_textView;
     GridView gridView;
+    Button excludeAccountButton;
     public static String [] prgmNameList={"Animação","Detetive","Drama","Fantasia",
             "Guerra","Histórico","Romance","Scifi",
             "Terror"
@@ -70,6 +76,7 @@ public class ProfileFragment extends Fragment {
                              final Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
         initializeScreen(rootView);
+
         attachFirebaseListener();
         // Inflate the layout for this fragment
         return rootView;
@@ -86,6 +93,38 @@ public class ProfileFragment extends Fragment {
         gridView.setAdapter(new CustomAdapter(getContext(), prgmNameList,prgmImages));
         // Get a reference to our user
         mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS).child(mLoggedUser.getEmail());
+
+        excludeAccountButton = (Button) rootView.findViewById(R.id.buttonExcludeAccount);
+        excludeAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                LoginManager.getInstance().logOut();
+                                SharedPreferences settings = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
+                                settings.edit().clear().commit();
+                                getActivity().finish();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //No button clicked
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+                mFirebaseUsersRef.removeValue();
+
+
+            }
+        });
     }
     private void attachFirebaseListener () {
         // Attach an listener to read the data at our users reference
@@ -178,7 +217,7 @@ public class ProfileFragment extends Fragment {
                     SharedPreferences sharedPref = getActivity().getSharedPreferences("settings", 0);
                     final String mLoggedUserEmail = sharedPref.getString("userEmail", null);
                     mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS).child(mLoggedUserEmail);
-                    mFirebaseUsersRef.child("genero").setValue(result[position]);
+                    mFirebaseUsersRef.child("genero").setValue(prgmImages[position]);
                 }
             });
             return rowView;

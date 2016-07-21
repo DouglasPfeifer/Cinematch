@@ -4,12 +4,16 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.douglaspfeifer.cinematch.R;
 import com.example.douglaspfeifer.cinematch.models.ItemObject;
@@ -20,57 +24,68 @@ import java.util.List;
 /**
  * Created by douglaspfeifer on 17/07/16.
  */
-public class CustomAdapter extends BaseAdapter {
+public class CustomAdapter extends BaseAdapter{
 
-    private LayoutInflater layoutinflater;
-    private List<ItemObject> listStorage;
-    private Context context;
+    String [] result;
+    Context context;
+    int [] imageId;
+    private static LayoutInflater inflater=null;
+    public CustomAdapter(Context mainActivity, String[] prgmNameList, int[] prgmImages) {
+        // TODO Auto-generated constructor stub
+        result=prgmNameList;
+        context=mainActivity;
+        imageId=prgmImages;
+        inflater = ( LayoutInflater )context.
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-    public CustomAdapter(Context context, List<ItemObject> customizedListView) {
-        this.context = context;
-        layoutinflater =(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        listStorage = customizedListView;
     }
 
     @Override
     public int getCount() {
-        return listStorage.size();
+        // TODO Auto-generated method stub
+        return result.length;
     }
 
     @Override
     public Object getItem(int position) {
+        // TODO Auto-generated method stub
         return position;
     }
 
     @Override
     public long getItemId(int position) {
+        // TODO Auto-generated method stub
         return position;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        ViewHolder listViewHolder;
-        if(convertView == null){
-            listViewHolder = new ViewHolder();
-            convertView = layoutinflater.inflate(R.layout.grid_item_genre, parent, false);
-            listViewHolder.textInListView = (TextView)convertView.findViewById(R.id.genre_textView);
-            listViewHolder.imageInListView = (ImageView)convertView.findViewById(R.id.genre_imageView);
-            convertView.setTag(listViewHolder);
-        }else{
-            listViewHolder = (ViewHolder)convertView.getTag();
-        }
-
-        listViewHolder.textInListView.setText(listStorage.get(position).getContent());
-        int imageResourceId = this.context.getResources().getIdentifier(listStorage.get(position).getImageResource(), "profile_image", this.context.getPackageName());
-        listViewHolder.imageInListView.setImageResource(imageResourceId);
-
-        return convertView;
+    public class Holder
+    {
+        TextView tv;
+        ImageView img;
     }
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        // TODO Auto-generated method stub
+        Holder holder=new Holder();
+        View rowView;
 
-    static class ViewHolder{
-        TextView textInListView;
-        ImageView imageInListView;
+        rowView = inflater.inflate(R.layout.grid_item_genre, null);
+        holder.tv=(TextView) rowView.findViewById(R.id.genre_textView);
+        holder.img=(ImageView) rowView.findViewById(R.id.genre_imageView);
+
+        holder.tv.setText(result[position]);
+        holder.img.setImageResource(imageId[position]);
+
+        rowView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Toast.makeText(context, "You Clicked "+result[position], Toast.LENGTH_LONG).show();
+            }
+        });
+
+        return rowView;
     }
 
 }

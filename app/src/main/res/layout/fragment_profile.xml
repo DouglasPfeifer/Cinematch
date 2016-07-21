@@ -37,6 +37,7 @@
                 android:layout_gravity="center"
                 android:text="Aqui deveria estar o nome no banco de dados" />
 
+
             <GridView
                 android:id="@+id/genre_gridView"
                 android:layout_width="match_parent"

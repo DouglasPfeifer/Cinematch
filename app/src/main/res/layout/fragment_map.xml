@@ -14,35 +14,46 @@
         tools:context=".ui.map.MyMapFragment">
     </LinearLayout>
 
-    <ScrollView
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="true"
-        android:background="@android:color/transparent"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
         >
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/firstLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+
+            android:orientation="horizontal"></LinearLayout>
+
+        <View
+            android:id="@+id/fView"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_centerVertical="true" />
+
+        <LinearLayout
+            android:id="@+id/thirdLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/fView"
+            android:background="@android:color/white"
+            android:orientation="horizontal"></LinearLayout>
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/bottomProfileImage_imageView"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
                 android:src="@drawable/profile_image"
                 app:border_color="#FF000000"/>
-            <LinearLayout
-                android:layout_alignBottom="@id/bottomProfileImage_imageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="50dp"
-                android:background="@android:color/white">
-            </LinearLayout>
-        </RelativeLayout>
-
-    </ScrollView>
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
 

@@ -57,6 +57,26 @@ public class ProfileFragment extends Fragment {
     TextView myProfileName_textView;
     GridView gridView;
 
+    public static String [] prgmNameList={"Coisa","Coisa","Coisa","Coisa",
+            "Coisa","Coisa","Coisa","Coisa",
+            "Coisa","Coisa","Coisa","Coisa",
+            "Coisa","Coisa","Coisa","Coisa",
+            "Coisa","Coisa","Coisa","Coisa",
+            "Coisa","Coisa","Coisa","Coisa",
+            "Coisa","Coisa","Coisa","Coisa",
+            "Coisa","Coisa","Coisa","Coisa"
+    };
+    public static int [] prgmImages={R.drawable.me_map_icon,R.drawable.me_map_icon, R.drawable.me_map_icon,R.drawable.me_map_icon,
+            R.drawable.me_map_icon,R.drawable.me_map_icon, R.drawable.me_map_icon,R.drawable.me_map_icon,
+            R.drawable.me_map_icon,R.drawable.me_map_icon, R.drawable.me_map_icon,R.drawable.me_map_icon,
+            R.drawable.me_map_icon,R.drawable.me_map_icon, R.drawable.me_map_icon,R.drawable.me_map_icon,
+            R.drawable.me_map_icon,R.drawable.me_map_icon, R.drawable.me_map_icon,R.drawable.me_map_icon,
+            R.drawable.me_map_icon,R.drawable.me_map_icon, R.drawable.me_map_icon,R.drawable.me_map_icon,
+            R.drawable.me_map_icon,R.drawable.me_map_icon, R.drawable.me_map_icon,R.drawable.me_map_icon,
+            R.drawable.me_map_icon,R.drawable.me_map_icon, R.drawable.me_map_icon,R.drawable.me_map_icon
+    };
+
+
 
     // Logged User
     private User mLoggedUser;
@@ -96,24 +116,13 @@ public class ProfileFragment extends Fragment {
 
         gridView = (GridView) rootView.findViewById(R.id.genre_gridView);
 
-        List<ItemObject> allItems = getAllItemObject();
-        allItems.get(1).setImageResource("drawables/me_map_icon");
-        CustomAdapter customAdapter = new CustomAdapter(getContext(), allItems);
-        gridView.setAdapter(customAdapter);
-        gridView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                gridView.setItemChecked(position, true);
-                Toast.makeText(getContext(), "Position: " + position, Toast.LENGTH_SHORT).show();
-            }
-        });
+        gridView.setAdapter(new CustomAdapter(getContext(), prgmNameList,prgmImages));
 
         // Get a reference to our user
         mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS).child(mLoggedUser.getEmail());
     }
 
-    public void attachFirebaseListener () {
+    private void attachFirebaseListener () {
         // Attach an listener to read the data at our users reference
         // Firebase listener for everything that we need to get from the database
         // Every time something changes on the database, the listener will change on the profile

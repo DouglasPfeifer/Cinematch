@@ -60,6 +60,12 @@ public class LoginActivity extends BaseActivity {
         }*/
 
         super.onCreate(savedInstanceState);
+        i = new Intent(this, MainActivity.class);
+        SharedPreferences mPreferences = getSharedPreferences("settings", 0);
+        if(mPreferences.getString("userEmail", null) != null)
+        {
+            startActivity(i);
+        }
 
         /*
          * Inicialização de tela
@@ -73,6 +79,7 @@ public class LoginActivity extends BaseActivity {
          * ou ocorreu um erro
          */
         mLoginButton.registerCallback(mCallbackManager, new FacebookImplementation());
+
     }
 
     /*
@@ -82,7 +89,7 @@ public class LoginActivity extends BaseActivity {
         getSupportActionBar().setTitle("Cinematch");
         setContentView(R.layout.activity_login);
 
-        i = new Intent(this, MainActivity.class);
+
 
         // Shared preferences
         sharedPref = getSharedPreferences("settings", 0);
@@ -94,6 +101,7 @@ public class LoginActivity extends BaseActivity {
         mCallbackManager = CallbackManager.Factory.create();
         mLoginButton = (LoginButton)findViewById(R.id.button_facebookLogin);
         mLoginButton.setReadPermissions(Arrays.asList("email", "public_profile"));
+
     }
 
     /*
@@ -104,6 +112,7 @@ public class LoginActivity extends BaseActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i("Let me see", "let me sing");
         super.onActivityResult(requestCode, resultCode, data);
 
         /*
@@ -117,7 +126,6 @@ public class LoginActivity extends BaseActivity {
      *
      */
     class FacebookImplementation implements FacebookCallback<LoginResult> {
-
         @Override
         public void onSuccess(LoginResult loginResult) {
             AccessToken token = loginResult.getAccessToken();
@@ -176,10 +184,13 @@ public class LoginActivity extends BaseActivity {
                                     }
                                 }
                             });
+
                         }
 
                         @Override
-                        public void onCancelled(FirebaseError firebaseError) { }
+                        public void onCancelled(FirebaseError firebaseError) {
+                            Log.i("Nada nada nada", "nada");
+                        }
                     });
 
                 }
@@ -190,16 +201,18 @@ public class LoginActivity extends BaseActivity {
                     Log.d("FBLOGIN", "Tthere was an error with your Firebase app");
                 }
             });
+
         }
 
         @Override
         public void onCancel() {
-
+            Log.i("Login", "Cancelled");
         }
 
         @Override
         public void onError(FacebookException error) {
 
+            Log.i("Login", "Error");
         }
     }
 }

@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -21,14 +23,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 
 import com.example.douglaspfeifer.cinematch.R;
+import com.example.douglaspfeifer.cinematch.models.User;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -52,6 +57,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.InputStream;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,7 +72,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
         // Required empty public constructor
     }
 
-    MapView mMapView;
+
     GoogleMap googleMap;
     private BottomSheetBehavior mBottomSheetBehavior;
     double longitude, latitude;
@@ -74,6 +81,12 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
     SharedPreferences sharedPref;
     String mLoggedUserEmail;
     Firebase usersRef, myRef;
+    ImageView imageBottomSheet;
+
+
+
+    private Firebase UserRefer;
+    private User clickedUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,6 +98,8 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
         myRef = usersRef.child(mLoggedUserEmail);
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
+
+
 
         SupportMapFragment mSupportMapFragment;
 
@@ -110,6 +125,8 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+        imageBottomSheet = (ImageView) view.findViewById(R.id.bottomProfileImage_imageView);
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -218,15 +235,64 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
     }
 
     public boolean onMarkerClick(Marker marker) {
-        mBottomSheetBehavior.setHideable(true);
-        mBottomSheetBehavior.setPeekHeight(500);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        clickedUser = new User();
+        UserRefer = new Firebase(Constants.FIREBASE_URL_USERS).child(marker.getTitle());
+        attachFirebaseListener();
         Log.i("Marker clicked", marker.getTitle());
         return false;
+    }
+
+    private void attachFirebaseListener () {
+        // Attach an listener to read the data at our users reference
+        // Firebase listener for everything that we need to get from the database
+        // Every time something changes on the database, the listener will change on the profile
+        UserRefer.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                clickedUser = dataSnapshot.getValue(User.class);
+                new DownloadImageTask(imageBottomSheet)
+                        .execute(clickedUser.getProfileImageURL());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
     }
 
     private void changeCamera(CameraUpdate update, GoogleMap.CancelableCallback callback) {
         googleMap.moveCamera(update);
         //googleMap.animateCamera(update, callback);
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+
+            mBottomSheetBehavior.setHideable(true);
+            mBottomSheetBehavior.setPeekHeight(500);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
     }
 }

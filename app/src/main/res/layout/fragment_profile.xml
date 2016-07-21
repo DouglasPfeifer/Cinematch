@@ -51,6 +51,7 @@
                     android:gravity="center"
                     />
 
+<<<<<<< Updated upstream
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -65,5 +66,25 @@
                     android:layout_height="0dp"
                     android:layout_weight="10"
                     android:visibility="invisible"/>
+=======
+
+            <GridView
+                android:id="@+id/genre_gridView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:columnWidth="80dp"
+                android:numColumns="auto_fit"
+                android:verticalSpacing="8dp"
+                android:horizontalSpacing="8dp"
+                android:padding="16dp"
+                android:stretchMode="columnWidth"
+                android:gravity="center"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+>>>>>>> Stashed changes
         </LinearLayout>
 </FrameLayout>

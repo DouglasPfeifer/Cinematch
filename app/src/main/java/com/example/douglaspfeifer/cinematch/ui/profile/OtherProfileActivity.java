@@ -49,10 +49,13 @@ public class OtherProfileActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // Display the button inside the toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         i = new Intent(this, ConversationActivity.class);
         mFirebaseUsersRef = new Firebase(Constants.FIREBASE_URL_USERS);
+
         SharedPreferences sharedPref = getSharedPreferences("settings", 0);
         mLoggedUserEmail = sharedPref.getString("userEmail", null);
+
         iniciarConversaButton = (Button) findViewById(R.id.iniciarConversaButton);
         setButton();
     }

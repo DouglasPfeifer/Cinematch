@@ -54,20 +54,15 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         // Se o usuário já possui conta e não é a primeira vez que usa o aplicativo após a instalação
-        /*if (AccessToken.getCurrentAccessToken() != null) {
+        if (AccessToken.getCurrentAccessToken() != null) {
             i = new Intent(this, MainActivity.class);
             startActivity(i);
-        }*/
+        }
 
         super.onCreate(savedInstanceState);
         i = new Intent(this, MainActivity.class);
         SharedPreferences mPreferences = getSharedPreferences("settings", 0);
-        if(mPreferences.getString("userEmail", null) != null)
-        {
-            startActivity(i);
-            if(mPreferences.getString("userEmail", null) != null)
-            finish();
-        }
+
 
         /*
          * Inicialização de tela
@@ -184,8 +179,8 @@ public class LoginActivity extends BaseActivity {
 
                                         startActivity(i);
 
-                                        if(getSharedPreferences("settings", 0).getString("userEmail", null) != null || Face)
-                                        finish();
+                                        if(getSharedPreferences("settings", 0).getString("userEmail", null) != null)
+                                            finish();
                                     }
                                 }
                             });

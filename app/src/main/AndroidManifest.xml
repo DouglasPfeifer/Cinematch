@@ -57,16 +57,25 @@
         <service
             android:name=".ui.map.MyLocationListenerService"
             android:enabled="true"
-            android:exported="true"></service>
-        
+            android:exported="true" />
+
         <activity
             android:name=".ui.chat.ConversationActivity"
             android:label="@string/title_activity_conversation"
             android:theme="@style/AppTheme.NoActionBar">
+
             <!-- Used for the return button on action bar -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.douglaspfeifer.cinematch.ui.chat.ConversationActivity" />
+        </activity>
+        <activity
+            android:name=".ui.profile.OtherProfileActivity"
+            android:label="@string/title_activity_other_profile"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.douglaspfeifer.cinematch.ui.profile.OtherProfileActivity" />
         </activity>
     </application>
 

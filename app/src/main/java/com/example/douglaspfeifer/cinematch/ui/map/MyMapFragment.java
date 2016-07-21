@@ -33,6 +33,7 @@ import com.example.douglaspfeifer.cinematch.R;
 import com.example.douglaspfeifer.cinematch.models.User;
 import com.example.douglaspfeifer.cinematch.ui.MainActivity;
 import com.example.douglaspfeifer.cinematch.ui.login.LoginActivity;
+import com.example.douglaspfeifer.cinematch.ui.profile.OtherProfileActivity;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -97,6 +98,8 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
     private Firebase UserRefer;
     private User clickedUser;
 
+    private View v;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -107,7 +110,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
         myRef = usersRef.child(mLoggedUserEmail);
         Markers = new HashMap<>();
 
-        View v = inflater.inflate(R.layout.fragment_map, container, false);
+        v = inflater.inflate(R.layout.fragment_map, container, false);
 
 
 
@@ -129,10 +132,10 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
 
         View bottomSheet = v.findViewById( R.id.bottom_sheet );
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
 
-            float StartingMoveY;
+            float StartingMoveY, MovedY;
 
             @Override
             public void onStateChanged(View bottomSheet, int newState) {
@@ -149,12 +152,16 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
                                 StartingMoveY = event.getRawY();
                                 break;
                             case MotionEvent.ACTION_MOVE:
+                                    MovedY = event.getRawY();
+                                break;
+                            case MotionEvent.ACTION_UP:
                                 if( mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED
-                                        && StartingMoveY - event.getRawY() > 100)
+                                        && StartingMoveY - MovedY > 200)
                                 {
-                                    Intent i = new Intent(getContext(), LoginActivity.class);
+                                    Intent i = new Intent(getContext(), OtherProfileActivity.class);
                                     i.putExtra("otherUserEmail", clickedUser.getEmail());
-                                    startActivity(i);}
+                                    startActivity(i);
+                                }
                                 break;
                             default:
                                 return true;
@@ -176,6 +183,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+
         super.onSaveInstanceState(outState);
     }
 
@@ -354,7 +362,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
             mBottomSheetBehavior.setPeekHeight(1000);
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-            TextView text = (TextView) getView().findViewById(R.id.nameBottom);
+            TextView text = (TextView) v.findViewById(R.id.nameBottom);
             text.setText(clickedUser.getName());
 
         }

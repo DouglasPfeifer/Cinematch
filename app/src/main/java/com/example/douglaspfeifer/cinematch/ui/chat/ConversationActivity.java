@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.douglaspfeifer.cinematch.R;
 import com.example.douglaspfeifer.cinematch.models.Chat;
 import com.example.douglaspfeifer.cinematch.ui.MainActivity;
+import com.example.douglaspfeifer.cinematch.utils.Constants;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -68,7 +69,18 @@ public class ConversationActivity extends AppCompatActivity {
         // Make sure we have a mUsername
         setupUsername();
 
-        setTitle(chatName);
+        Firebase getName = new Firebase(Constants.FIREBASE_URL_USERS);
+        getName.child(chatName).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                setTitle(dataSnapshot.getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
         // Setup our Firebase mFirebaseRef
         mFirebaseRef = new Firebase(FIREBASE_URL).child("chat").child(chatNode);

@@ -125,8 +125,6 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
         v = inflater.inflate(R.layout.fragment_map, container, false);
 
         i = new Intent(getContext(), ConversationActivity.class);
-
-
         iniciarConversaButton = (Button) v.findViewById(R.id.iniciarConversaButton);
 
 

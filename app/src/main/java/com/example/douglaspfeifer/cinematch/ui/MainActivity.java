@@ -1,6 +1,10 @@
 package com.example.douglaspfeifer.cinematch.ui;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -17,9 +21,9 @@ import com.example.douglaspfeifer.cinematch.ui.map.MyMapFragment;
 
 import com.example.douglaspfeifer.cinematch.ui.profile.ProfileFragment;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
+import com.facebook.login.LoginManager;
 import com.firebase.client.Firebase;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FacebookAuthProvider;
 
 import java.util.List;
 import java.util.Vector;
@@ -101,7 +105,30 @@ public class MainActivity extends BaseActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            LoginManager.getInstance().logOut();
+                            SharedPreferences settings = getSharedPreferences("settings", Context.MODE_PRIVATE);
+                            settings.edit().clear().commit();
+                            finish();
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show();
+
             return true;
         }
 

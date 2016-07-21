@@ -35,7 +35,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="invisible"
-
             android:orientation="horizontal"></LinearLayout>
 
         <View
@@ -50,14 +49,15 @@
             android:layout_height="match_parent"
             android:layout_below="@id/fView"
             android:background="@android:color/white"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:id="@+id/nameBottom"
-                android:text="Name"
+                android:text="A name sufficienteakmsdclaçaksmd"
+                android:textAlignment="center"
                 android:paddingTop="50dp"
                 />
         </LinearLayout>

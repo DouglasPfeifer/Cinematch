@@ -213,6 +213,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
             longitude = location.getLongitude();
             latitude = location.getLatitude();
 
+
             CameraPosition MyPos =
                     new CameraPosition.Builder().target(new LatLng(latitude, longitude))
                             .zoom(15.5f)
@@ -282,6 +283,9 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
     }
     public void onMapReady(GoogleMap map) {
         googleMap = map;
+
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        googleMap.setInfoWindowAdapter(null);
         if(ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             requestPermissions(LOCATION_PERMS, REQUEST_LOCATION);
@@ -294,7 +298,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
         clickedUser = new User();
         UserRefer = new Firebase(Constants.FIREBASE_URL_USERS).child(marker.getTitle());
         attachFirebaseListener();
-        Log.i("Marker clicked", marker.getTitle());
+        Log.i("Marker clicked", marker.getId());
         return false;
     }
 
@@ -347,11 +351,12 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
             bmImage.setImageBitmap(result);
 
             mBottomSheetBehavior.setHideable(true);
-            mBottomSheetBehavior.setPeekHeight(500);
+            mBottomSheetBehavior.setPeekHeight(1000);
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
             TextView text = (TextView) getView().findViewById(R.id.nameBottom);
             text.setText(clickedUser.getName());
+
         }
     }
 }

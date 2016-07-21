@@ -65,6 +65,8 @@ public class LoginActivity extends BaseActivity {
         if(mPreferences.getString("userEmail", null) != null)
         {
             startActivity(i);
+            if(mPreferences.getString("userEmail", null) != null)
+            finish();
         }
 
         /*
@@ -181,6 +183,9 @@ public class LoginActivity extends BaseActivity {
                                         Toast.makeText(getApplicationContext(),"The Facebook user is now authenticated with your Firebase app",Toast.LENGTH_LONG).show();
 
                                         startActivity(i);
+
+                                        if(getSharedPreferences("settings", 0).getString("userEmail", null) != null || Face)
+                                        finish();
                                     }
                                 }
                             });

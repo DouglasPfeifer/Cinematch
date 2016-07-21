@@ -14,12 +14,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -27,6 +30,8 @@ import android.widget.ImageView;
 
 import com.example.douglaspfeifer.cinematch.R;
 import com.example.douglaspfeifer.cinematch.models.User;
+import com.example.douglaspfeifer.cinematch.ui.MainActivity;
+import com.example.douglaspfeifer.cinematch.ui.login.LoginActivity;
 import com.example.douglaspfeifer.cinematch.utils.Constants;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -58,6 +63,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -84,6 +91,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
     ImageView imageBottomSheet;
 
 
+    private Map<String, Marker> Markers;
 
     private Firebase UserRefer;
     private User clickedUser;
@@ -96,6 +104,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
         mLoggedUserEmail = sharedPref.getString("userEmail", null);
         usersRef = new Firebase(Constants.FIREBASE_URL_USERS);
         myRef = usersRef.child(mLoggedUserEmail);
+        Markers = new HashMap<>();
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
@@ -119,7 +128,33 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
 
         View bottomSheet = v.findViewById( R.id.bottom_sheet );
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(View bottomSheet, int newState) {
+            }
 
+            @Override
+            public void onSlide(final View bottomSheet, float slideOffset) {
+                bottomSheet.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        int action = MotionEventCompat.getActionMasked(event);
+                        switch (action) {
+                            case MotionEvent.ACTION_DOWN:
+                                if( mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED )
+                                {
+                                    Intent i = new Intent(getContext(), LoginActivity.class);
+                                    i.putExtra("otherUserEmail", clickedUser.getEmail());
+                                    startActivity(i);
+                                }
+                                return false;
+                            default:
+                                return true;
+                        }
+                    }
+                });
+            }
+        });
         return v;
     }
 
@@ -153,8 +188,7 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
             case REQUEST_LOCATION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    setMyPos();
+                    setFirstSett();
                 }
                 return;
             }
@@ -163,7 +197,6 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
 
     public void setMyPos()
     {
-
         LocationManager lm = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         longitude = location.getLongitude();
@@ -189,13 +222,11 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
 
     }
 
-    public void onMapReady(GoogleMap map) {
-        googleMap = map;
-        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)requestPermissions(LOCATION_PERMS, REQUEST_LOCATION);
-        else {
-            setMyPos();
-            getContext().startService(new Intent(getContext(), MyLocationListenerService.class));
-        }
+
+    public void setFirstSett()
+    {
+        setMyPos();
+        getContext().startService(new Intent(getContext(), MyLocationListenerService.class));
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geoFire");
         googleMap.setOnMarkerClickListener(this);
@@ -206,20 +237,23 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                googleMap.addMarker(new MarkerOptions()
+                Markers.put(key, googleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(location.latitude, location.longitude))
                         .title(key)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.me_map_icon)));
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.me_map_icon))));
             }
 
             @Override
             public void onKeyExited(String key) {
-
+                Markers.get(key).remove();
             }
 
             @Override
             public void onKeyMoved(String key, GeoLocation location) {
-
+                LatLng update = new LatLng(location.latitude, location.longitude);
+                Marker toUpdate = Markers.get(key);
+                if( toUpdate != null )
+                    toUpdate.setPosition(update);
             }
 
             @Override
@@ -232,6 +266,15 @@ public class MyMapFragment extends Fragment implements OnMapReadyCallback, Googl
 
             }
         });
+    }
+    public void onMapReady(GoogleMap map) {
+        googleMap = map;
+        if(ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            requestPermissions(LOCATION_PERMS, REQUEST_LOCATION);
+        else
+            setFirstSett();
+
     }
 
     public boolean onMarkerClick(Marker marker) {

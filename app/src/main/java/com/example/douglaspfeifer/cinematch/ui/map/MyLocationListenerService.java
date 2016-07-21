@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -32,6 +33,15 @@ public class MyLocationListenerService extends Service
     public MyLocationListener listener;
     public Location previousBestLocation = null;
 
+    private final IBinder mBinder = new MyBinder();
+
+    public class MyBinder extends Binder
+    {
+        MyLocationListenerService getService()
+        {
+            return MyLocationListenerService .this;
+        }
+    }
 
     Intent intent;
 
@@ -67,7 +77,12 @@ public class MyLocationListenerService extends Service
     @Override
     public IBinder onBind(Intent intent)
     {
-        return null;
+        return mBinder;
+    }
+
+    public Location getLocation()
+    {
+        return previousBestLocation;
     }
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
